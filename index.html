@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Display</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .ip {
+            font-family: monospace;
+            margin: 20px 0;
+        }
+
+        .copy-button {
+            background-color: #ffffff;
+            color: #2c2c2c;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .copy-button:active {
+            background-color: #cccccc;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay loop muted>
+            <source src="bg.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="container">
+        <div>Your IP is:</div>
+        <div class="loader" id="loader"></div>
+        <div class="ip" id="ip-address" style="display: none;"></div>
+        <button class="copy-button" id="copy-button" style="display: none;">Copy</button>
+    </div>
+
+    <script>
+        // Fetch the IP address using an external service
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('ip-address').innerText = data.ip;
+                document.getElementById('ip-address').style.display = 'block';
+                document.getElementById('copy-button').style.display = 'inline-block';
+            })
+            .catch(error => {
+                console.error('Error fetching IP:', error);
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('ip-address').innerText = 'Error fetching IP';
+                document.getElementById('ip-address').style.display = 'block';
+            });
+
+        // Copy IP address to clipboard
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const ipAddress = document.getElementById('ip-address').innerText;
+            navigator.clipboard.writeText(ipAddress).then(() => {
+                this.innerText = 'Copied!';
+            }).catch(err => {
+                console.error('Failed to copy IP:', err);
+            });
+        });
+    </script>
+</body>
+</html>
